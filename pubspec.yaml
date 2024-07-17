@@ -51,6 +51,9 @@ dependencies:
   flutter_image_slideshow: ^0.1.6
   carousel_slider: ^4.0.0
   fl_chart: ^0.68.0
+  simple_progress_indicators: ^0.2.0
+  syncfusion_flutter_datagrid: ^26.1.40
+  pluto_grid: ^8.0.0
 
 
 dev_dependencies:
@@ -80,6 +83,11 @@ flutter:
     - lib/Assets/images/blob.jpeg
     - lib/Assets/images/download.jpeg
     - lib/Assets/images/img (130).jpg
+    - lib/Assets/images/images.jpeg
+    - lib/Assets/images/contacticon.jpeg
+    - lib/Assets/images/google.jpeg
+    - lib/Assets/images/girl.png
+    - lib/Assets/images/boy.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

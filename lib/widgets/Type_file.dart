@@ -8,12 +8,12 @@ class TypeFile extends StatefulWidget {
   final double height;
 
   const TypeFile({
-    Key? key,
+    super.key,
     required this.title,
     required this.hintext,
     required this.width,
     required this.height,
-  }) : super(key: key);
+  });
 
   @override
   _TypeFileState createState() => _TypeFileState();
@@ -27,19 +27,31 @@ class _TypeFileState extends State<TypeFile> {
 
     if (result != null) {
       setState(() {
-        selectedFileName = result.files.single.name; 
+        selectedFileName = result.files.single.name;
       });
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    double screenWidth = MediaQuery.of(context).size.width;
+    double screenHeight = MediaQuery.of(context).size.height;
+
+    double responsiveWidth;
+    if (screenWidth < 450) {
+      responsiveWidth = screenWidth * 0.95; // for phones
+    } else if (screenWidth < 820) {
+      responsiveWidth = widget.width; // for smaller tablets
+    } else {
+      responsiveWidth = screenWidth * 0.95; // for larger tablets
+    }
+
+    double responsiveHeight = screenWidth < 450 ? screenHeight * 0.1 : widget.height;
+
     return Padding(
-      padding:  EdgeInsets.only(
-         left: widget.width * 0.02,
-         right: widget.height * 0.02,
-      ),
+      padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.05),
       child: Container(
+        width: responsiveWidth,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -54,11 +66,11 @@ class _TypeFileState extends State<TypeFile> {
             GestureDetector(
               onTap: _pickFile,
               child: Container(
-                width: widget.width*0.95,
-                height: widget.height,
+                width: responsiveWidth,
+                height: responsiveHeight,
                 child: TextFormField(
                   readOnly: true,
-                  onTap: _pickFile, 
+                  onTap: _pickFile,
                   decoration: InputDecoration(
                     hintText: widget.hintext,
                     border: OutlineInputBorder(

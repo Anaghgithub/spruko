@@ -8,13 +8,13 @@ class Typepassword extends StatefulWidget {
   final TextEditingController passwordController;
 
   const Typepassword({
-    Key? key,
+    super.key,
     required this.title,
     required this.hintText,
     required this.width,
     required this.height,
     required this.passwordController,
-  }) : super(key: key);
+  });
 
   @override
   _TypepasswordState createState() => _TypepasswordState();
@@ -65,13 +65,27 @@ class _TypepasswordState extends State<Typepassword> {
 
   @override
   Widget build(BuildContext context) {
+    double screenWidth = MediaQuery.of(context).size.width;
+
+    // Adjust width and height for different screen sizes
+    double responsiveWidth;
+    if (screenWidth < 450) {
+      responsiveWidth = screenWidth * 0.9; // for phones
+    } else if (screenWidth < 820) {
+      responsiveWidth = widget.width; // for smaller tablets
+    } else {
+      responsiveWidth = screenWidth * 0.9; // for larger tablets
+    }
+
+    double responsiveHeight = screenWidth < 450 ? widget.height * 1.2 : widget.height;
+
     return Padding(
-      padding:  EdgeInsets.only(
-         left: widget.width * 0.02,
-       right: widget.height * 0.02),
+      padding: EdgeInsets.symmetric(
+        horizontal: screenWidth * 0.05,
+      ),
       child: Container(
-        width: widget.width,
-        height: widget.height,
+        width: responsiveWidth,
+        height: responsiveHeight,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

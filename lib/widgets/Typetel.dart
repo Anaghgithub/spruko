@@ -13,7 +13,7 @@ class MobileNo extends StatefulWidget {
     required this.title,
     required this.hintext,
     required this.width,
-    required this.height, 
+    required this.height,
     required this.mobileController,
   }) : super(key: key);
 
@@ -24,13 +24,23 @@ class MobileNo extends StatefulWidget {
 class _MobileNoState extends State<MobileNo> {
   @override
   Widget build(BuildContext context) {
+    double screenWidth = MediaQuery.of(context).size.width;
+
+    double responsiveWidth;
+
+    if (screenWidth < 450) {
+      responsiveWidth = screenWidth * 0.9; // for phones
+    } else if (screenWidth < 820) {
+      responsiveWidth = widget.width; // for smaller tablets
+    } else {
+      responsiveWidth = screenWidth * 0.9; // for larger tablets
+    }
+
 
     return Padding(
-      padding:  EdgeInsets.only(
-        left: widget.width * 0.02,
-       right: widget.height * 0.02),
+      padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.05),
       child: Container(
-        width: widget.width,
+        width: responsiveWidth,
         height: widget.height,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -47,7 +57,7 @@ class _MobileNoState extends State<MobileNo> {
               children: [
                 Expanded(
                   child: TextFormField(
-                    controller:widget.mobileController,
+                    controller: widget.mobileController,
                     decoration: InputDecoration(
                       hintText: widget.hintext,
                       border: OutlineInputBorder(
@@ -76,8 +86,7 @@ class _MobileNoState extends State<MobileNo> {
                     },
                   ),
                 ),
-                const SizedBox(width: 8.0), 
-               
+                const SizedBox(width: 8.0),
               ],
             ),
           ],

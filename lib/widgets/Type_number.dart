@@ -8,33 +8,37 @@ class Text_number extends StatefulWidget {
   final TextEditingController numberController;
 
   const Text_number({
-    super.key,
+    Key? key,
     required this.title,
     required this.hintext,
     required this.width,
     required this.height,
     required this.numberController,
-  });
+  }) : super(key: key);
 
   @override
   State<Text_number> createState() => _Text_numberState();
 }
 
 class _Text_numberState extends State<Text_number> {
-  String? _validateNumber(String? value) {
-    if (value == null || value.isEmpty) {
-      return 'This field is required';
-    }
-    return null;
-  }
-
   @override
   Widget build(BuildContext context) {
+    double screenWidth = MediaQuery.of(context).size.width;
+    double screenHeight = MediaQuery.of(context).size.height;
+
+    double responsiveWidth;
+    if (screenWidth < 450) {
+      responsiveWidth = screenWidth * 0.9; // for phones
+    } else if (screenWidth < 820) {
+      responsiveWidth = widget.width; // for smaller tablets
+    } else {
+      responsiveWidth = screenWidth * 0.9; // for larger tablets
+    }
+
+    double responsiveHeight = screenWidth < 450 ? screenHeight * 0.1 : widget.height;
+
     return Padding(
-      padding:  EdgeInsets.only(
-         left: widget.width * 0.02,
-       right: widget.height * 0.02),
-      
+      padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.05),
       child: Container(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -48,8 +52,8 @@ class _Text_numberState extends State<Text_number> {
             ),
             const SizedBox(height: 8.0),
             Container(
-              width: widget.width,
-              height: widget.height,
+              width: responsiveWidth,
+              height: responsiveHeight,
               child: TextFormField(
                 controller: widget.numberController,
                 decoration: InputDecoration(
@@ -64,7 +68,12 @@ class _Text_numberState extends State<Text_number> {
                     borderSide: BorderSide(color: Colors.black.withOpacity(0.3)),
                   ),
                 ),
-                validator: _validateNumber,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'This field is required';
+                  }
+                  return null;
+                },
                 autocorrect: true,
                 cursorColor: Colors.black.withOpacity(0.5),
                 style: const TextStyle(
@@ -74,7 +83,7 @@ class _Text_numberState extends State<Text_number> {
                 ),
               ),
             ),
-            const SizedBox(width: 8.0),
+            const SizedBox(height: 8.0),
           ],
         ),
       ),

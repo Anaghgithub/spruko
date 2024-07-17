@@ -12,7 +12,7 @@ class Typeemail extends StatefulWidget {
     required this.title,
     required this.hintext,
     required this.width,
-    required this.height, 
+    required this.height,
     required this.emailController,
   });
 
@@ -21,7 +21,6 @@ class Typeemail extends StatefulWidget {
 }
 
 class _TypeemailState extends State<Typeemail> {
-
   String? _validateEmail(String? value) {
     if (value == null || value.isEmpty) {
       var title = widget.title;
@@ -37,57 +36,67 @@ class _TypeemailState extends State<Typeemail> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: widget.width,
-      height: widget.height,
-      padding:  EdgeInsets.only(
-         left: widget.width * 0.02,
-       right: widget.height * 0.02),
-      
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            widget.title,
-            style: const TextStyle(
-              fontSize: 15.0,
-              fontWeight: FontWeight.bold,
+    double screenWidth = MediaQuery.of(context).size.width;
+    double responsiveWidth = screenWidth < 450
+        ? screenWidth * 0.9
+        : screenWidth < 820
+            ? widget.width
+            : screenWidth * 0.9;
+    double responsiveHeight =
+        screenWidth < 600 ? widget.height * 1.2 : widget.height;
+
+    return Padding(
+      padding: EdgeInsets.symmetric(
+        horizontal: screenWidth * 0.05,
+      ),
+      child: Container(
+        width: responsiveWidth,
+        height: responsiveHeight,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              widget.title,
+              style: const TextStyle(
+                fontSize: 15.0,
+                fontWeight: FontWeight.bold,
+              ),
             ),
-          ),
-          const SizedBox(height: 8.0),
-          Row(
-            children: [
-              Expanded(
-                child: TextFormField(
-                  controller:widget.emailController,
-                  decoration: InputDecoration(
-                    hintText: widget.hintext,
-                    border: OutlineInputBorder(
-                      borderSide:
-                          BorderSide(color: Colors.black.withOpacity(0.3)),
+            const SizedBox(height: 8.0),
+            Row(
+              children: [
+                Expanded(
+                  child: TextFormField(
+                    controller: widget.emailController,
+                    decoration: InputDecoration(
+                      hintText: widget.hintext,
+                      border: OutlineInputBorder(
+                        borderSide: BorderSide(
+                            color: Colors.black.withOpacity(0.3)),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                            color: Colors.black.withOpacity(0.3)),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                            color: Colors.black.withOpacity(0.3)),
+                      ),
                     ),
-                    enabledBorder: OutlineInputBorder(
-                      borderSide:
-                          BorderSide(color: Colors.black.withOpacity(0.3)),
+                    validator: _validateEmail,
+                    autocorrect: false,
+                    cursorColor: Colors.black,
+                    style: const TextStyle(
+                      color: Colors.black,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w300,
                     ),
-                    focusedBorder: OutlineInputBorder(
-                      borderSide:
-                          BorderSide(color: Colors.black.withOpacity(0.3)),
-                    ),
-                  ),
-                  validator: _validateEmail,
-                  autocorrect: false,
-                  cursorColor: Colors.black,
-                  style: const TextStyle(
-                    color: Colors.black,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w300,
                   ),
                 ),
-              ),
-            ],
-          ),
-        ],
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }

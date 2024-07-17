@@ -1,8 +1,20 @@
-import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:fl_chart/fl_chart.dart';
+import 'package:spruko/graph/revenueheader.dart';
 
 class LineChartSample2 extends StatefulWidget {
-  const LineChartSample2({super.key});
+  final double phoneHeight;
+  final double phoneWidth;
+  final double width;
+  final double height;
+
+  const LineChartSample2({
+    super.key,
+    required this.phoneHeight,
+    required this.phoneWidth,
+    required this.width,
+    required this.height,
+  });
 
   @override
   State<LineChartSample2> createState() => _LineChartSample2State();
@@ -11,134 +23,159 @@ class LineChartSample2 extends StatefulWidget {
 class _LineChartSample2State extends State<LineChartSample2> {
   List<Color> gradientColors = [
     Colors.orange,
-    Colors.orangeAccent
+    Colors.orangeAccent,
   ];
 
   bool showAvg = false;
 
+  List<String> months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'];
+  List<double> revenues = [55, 50, 1.5, 24, 20, 32, 1];
+
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: <Widget>[
-        AspectRatio(
-          aspectRatio: 1.70,
-          child: Padding(
-            padding: const EdgeInsets.only(
-              right: 18,
-              left: 12,
-              top: 24,
-              bottom: 12,
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        double screenWidth = constraints.maxWidth;
+
+        double width;
+        double height = widget.height;
+
+        if (screenWidth <= 600) {
+          // Phone size
+          width = widget.phoneWidth;
+          height = widget.phoneHeight;
+        } else if (screenWidth <= 1024) {
+          // Tablet size
+          width = screenWidth;
+          height = widget.height;
+        } else {
+          // Full-screen size
+          width = widget.width;
+          height = widget.height;
+        }
+
+        return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          child: Container(
+            width: width,
+            height: height,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(10),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.withOpacity(0.5),
+                  spreadRadius: 5,
+                  blurRadius: 7,
+                  offset: Offset(0, 3),
+                ),
+              ],
             ),
-            child: LineChart(
-              showAvg ? avgData() : mainData(),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.max,
+              children: <Widget>[
+                const RevenueHeader(
+                  imageUrl: 'lib/Assets/images/images.jpeg',
+                  title: 'Revenue',
+                  revenue: '\$12,897',
+                  percentage: '3.5%',
+                  percentageColor: Color.fromARGB(255, 95, 204, 98),
+                ),
+                Expanded(
+                  child: Stack(
+                    children: <Widget>[
+                      SizedBox(
+                        width: width,
+                        height: height,
+                        child: LineChart(
+                          showAvg ? avgData() : mainData(),
+                        ),
+                      ),
+                      Positioned(
+                        child: SizedBox(
+                          width: 60,
+                          child: TextButton(
+                            onPressed: () {
+                              setState(() {
+                                showAvg = !showAvg;
+                              });
+                            },
+                            child: Text(
+                              'avg',
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: showAvg
+                                    ? Colors.white.withOpacity(0.5)
+                                    : Colors.white,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ),
           ),
-        ),
-        SizedBox(
-          width: 60,
-          height: 34,
-          child: TextButton(
-            onPressed: () {
-              setState(() {
-                showAvg = !showAvg;
-              });
-            },
-            child: Text(
-              'avg',
-              style: TextStyle(
-                fontSize: 12,
-                color: showAvg ? Colors.white.withOpacity(0.5) : Colors.white,
-              ),
-            ),
-          ),
-        ),
-      ],
+        );
+      },
     );
-  }
-
-  Widget bottomTitleWidgets(double value, TitleMeta meta) {
-    const style = TextStyle(
-      fontWeight: FontWeight.bold,
-      fontSize: 16,
-    );
-    Widget text;
-    switch (value.toInt()) {
-      case 2:
-        text = const Text('MAR', style: style);
-        break;
-      case 5:
-        text = const Text('JUN', style: style);
-        break;
-      case 8:
-        text = const Text('SEP', style: style);
-        break;
-      default:
-        text = const Text('', style: style);
-        break;
-    }
-
-    return SideTitleWidget(
-      axisSide: meta.axisSide,
-      child: text,
-    );
-  }
-
-  Widget leftTitleWidgets(double value, TitleMeta meta) {
-    const style = TextStyle(
-      fontWeight: FontWeight.bold,
-      fontSize: 15,
-    );
-    String text;
-    switch (value.toInt()) {
-      case 1:
-        text = '10K';
-        break;
-      case 3:
-        text = '30k';
-        break;
-      case 5:
-        text = '50k';
-        break;
-      default:
-        return Container();
-    }
-
-    return Text(text, style: style, textAlign: TextAlign.left);
   }
 
   LineChartData mainData() {
     return LineChartData(
-      gridData: FlGridData(
-        show: false, // Hide grid lines
+      lineTouchData: LineTouchData(
+        touchTooltipData: LineTouchTooltipData(
+          getTooltipItems: (touchedSpots) {
+            return touchedSpots.map((touchedSpot) {
+              const textStyle = TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontSize: 12,
+              );
+              final month = months[touchedSpot.spotIndex];
+              final revenue = revenues[touchedSpot.spotIndex];
+              return LineTooltipItem(
+                '$month\nRevenue: ${revenue.toStringAsFixed(2)}',
+                textStyle,
+              );
+            }).toList();
+          },
+          tooltipRoundedRadius: 8,
+          fitInsideHorizontally: true,
+          fitInsideVertically: true,
+        ),
       ),
-      titlesData: FlTitlesData(
+      gridData: const FlGridData(
+        show: false,
+      ),
+      titlesData: const FlTitlesData(
         show: true,
-        rightTitles: const AxisTitles(
+        rightTitles: AxisTitles(
           sideTitles: SideTitles(showTitles: false),
         ),
-        topTitles: const AxisTitles(
+        topTitles: AxisTitles(
           sideTitles: SideTitles(showTitles: false),
         ),
         bottomTitles: AxisTitles(
           sideTitles: SideTitles(
-            showTitles: true,
+            showTitles: false,
             reservedSize: 30,
             interval: 1,
-            getTitlesWidget: bottomTitleWidgets,
           ),
         ),
         leftTitles: AxisTitles(
           sideTitles: SideTitles(
-            showTitles: true,
+            showTitles: false,
             interval: 1,
-            getTitlesWidget: leftTitleWidgets,
             reservedSize: 42,
           ),
         ),
       ),
       borderData: FlBorderData(
-        show: true,
-        border: Border.all(color: const Color(0xff37434d)),
+        show: false,
       ),
       minX: 0,
       maxX: 6,
@@ -180,37 +217,34 @@ class _LineChartSample2State extends State<LineChartSample2> {
   LineChartData avgData() {
     return LineChartData(
       lineTouchData: const LineTouchData(enabled: false),
-      gridData: FlGridData(
-        show: false, 
+      gridData: const FlGridData(
+        show: false,
       ),
-      titlesData: FlTitlesData(
+      titlesData: const FlTitlesData(
         show: true,
         bottomTitles: AxisTitles(
           sideTitles: SideTitles(
-            showTitles: true,
+            showTitles: false,
             reservedSize: 30,
-            getTitlesWidget: bottomTitleWidgets,
             interval: 1,
           ),
         ),
         leftTitles: AxisTitles(
           sideTitles: SideTitles(
-            showTitles: true,
-            getTitlesWidget: leftTitleWidgets,
+            showTitles: false,
             reservedSize: 42,
             interval: 1,
           ),
         ),
-        topTitles: const AxisTitles(
+        topTitles: AxisTitles(
           sideTitles: SideTitles(showTitles: false),
         ),
-        rightTitles: const AxisTitles(
+        rightTitles: AxisTitles(
           sideTitles: SideTitles(showTitles: false),
         ),
       ),
       borderData: FlBorderData(
-        show: true,
-        border: Border.all(color: const Color(0xff37434d)),
+        show: false,
       ),
       minX: 0,
       maxX: 6,

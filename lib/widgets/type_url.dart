@@ -27,12 +27,18 @@ class TypeUrl extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
-    double screenHeight = MediaQuery.of(context).size.height;
+
+    double responsiveWidth;
+    if (screenWidth < 450) {
+      responsiveWidth = screenWidth * 0.9; // for phones
+    } else if (screenWidth < 820) {
+      responsiveWidth = width; // for smaller tablets
+    } else {
+      responsiveWidth = screenWidth * 0.9; // for larger tablets
+    }
+
     return Padding(
-      padding:  EdgeInsets.only(
-       left: screenWidth * 0.02,
-        right: screenHeight * 0.02,
-      ),
+      padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.05),
       child: Container(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -46,7 +52,7 @@ class TypeUrl extends StatelessWidget {
             ),
             const SizedBox(height: 8.0),
             Container(
-              width: width,
+              width: responsiveWidth,
               height: height,
               child: TextFormField(
                 controller: urlController,

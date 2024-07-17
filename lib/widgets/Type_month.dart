@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:month_picker_dialog/month_picker_dialog.dart';
 
 class TypeMonth extends StatefulWidget {
@@ -9,14 +8,14 @@ class TypeMonth extends StatefulWidget {
   final double height;
   final TextEditingController monthController;
 
-  TypeMonth({
-    Key? key,
+  const TypeMonth({
+    super.key,
     required this.title,
     required this.hintext,
     required this.width,
     required this.height,
     required this.monthController,
-  }) : super(key: key);
+  });
 
   @override
   _TypeMonthState createState() => _TypeMonthState();
@@ -38,12 +37,24 @@ class _TypeMonthState extends State<TypeMonth> {
 
   @override
   Widget build(BuildContext context) {
+    double screenWidth = MediaQuery.of(context).size.width;
+    double screenHeight = MediaQuery.of(context).size.height;
+
+    double responsiveWidth;
+    if (screenWidth < 450) {
+      responsiveWidth = screenWidth * 0.9; // for phones
+    } else if (screenWidth < 820) {
+      responsiveWidth = widget.width; // for smaller tablets
+    } else {
+      responsiveWidth = screenWidth * 0.9; // for larger tablets
+    }
+
+    double responsiveHeight = screenWidth < 450 ? screenHeight * 0.1 : widget.height;
+
     return Padding(
-      padding:  EdgeInsets.only(
-        left: widget.width * 0.02,
-        right: widget.height * 0.02,
-      ),
+      padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.05),
       child: Container(
+        width: responsiveWidth,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -57,41 +68,42 @@ class _TypeMonthState extends State<TypeMonth> {
             const SizedBox(height: 8.0),
             Row(
               children: [
-                Container(
-                  width: widget.width*0.785,
-                  height: widget.height,
-                  child: TextFormField(
-                    controller: widget.monthController,
-                    decoration: InputDecoration(
-                      hintText: widget.hintext,
-                      border: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.black.withOpacity(0.3)),
+                Expanded(
+                  child: Container(
+                    height: responsiveHeight,
+                    child: TextFormField(
+                      controller: widget.monthController,
+                      decoration: InputDecoration(
+                        hintText: widget.hintext,
+                        border: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.black.withOpacity(0.3)),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.black.withOpacity(0.3)),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.black.withOpacity(0.3)),
+                        ),
+                        suffixIcon: IconButton(
+                          icon: const Icon(Icons.calendar_today),
+                          onPressed: () {
+                            _pickMonth(context);
+                          },
+                        ),
                       ),
-                      enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.black.withOpacity(0.3)),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'This field is required';
+                        }
+                        return null;
+                      },
+                      autocorrect: true,
+                      cursorColor: Colors.black.withOpacity(0.5),
+                      style: const TextStyle(
+                        color: Colors.black,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w300,
                       ),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: Colors.black.withOpacity(0.3)),
-                      ),
-                      suffixIcon: IconButton(
-                        icon: Icon(Icons.calendar_today),
-                        onPressed: () {
-                          _pickMonth(context);
-                        },
-                      ),
-                    ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'This Field is required';
-                      }
-                      return null;
-                    },
-                    autocorrect: true,
-                    cursorColor: Colors.black.withOpacity(0.5),
-                    style: const TextStyle(
-                      color: Colors.black,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w300,
                     ),
                   ),
                 ),
